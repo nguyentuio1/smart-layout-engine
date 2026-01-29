@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"sort"
 	"syscall/js"
+
 	"github.com/nguyentuio1/smart-layout-engine/core"
 )
 
@@ -12,6 +14,11 @@ func solveWrapper(this js.Value, args []js.Value) interface{} {
 	inputJSON := args[0].String()
 	var items []core.Entity
 	json.Unmarshal([]byte(inputJSON), &items)
+	sort.Slice(items, func(i, j int) bool {
+		areaI := items[i].Size.W * items[i].Size.H
+		areaJ := items[j].Size.W * items[j].Size.H
+		return areaI > areaJ // Thằng diện tích lớn hơn sẽ đứng trước
+	})
 
 	// 2. Khởi tạo bộ giải (Solver)
 	solver := core.SimpleSolver{
